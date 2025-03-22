@@ -1,0 +1,32 @@
+<task>
+ファイルが多すぎるのでプロジェクトの全体像が掴みづらいです
+libファイル以外を整頓してください
+</task>
+
+---
+
+- プロジェクトの構造を分析し、ファイルを適切なディレクトリに整理
+- 次のディレクトリ構造に整理しました：
+  - example/ - 生成されたコード例、サンプルコード
+  - spec/fixtures/ - テスト用のJSONスキーマファイルやテストデータ
+  - tools/ - シェルスクリプトなどのツール
+- 移動したファイル:
+  - ルートディレクトリから example/ へ:
+    - generated_from_cli.rb
+    - generated_blob.rb
+    - blob_resource_contents.rb
+    - annotated.rb
+    - user.rb
+    - all_definitions.rb
+    - multiple_contents.rb
+  - ルートディレクトリから spec/fixtures/ へ:
+    - annotated_test.rb
+    - blob_test.json
+    - test_schema.json
+    - schema.json (main_schema.jsonに名前変更)
+  - ルートディレクトリから tools/ へ:
+    - extract_and_generate.sh
+- 削除したファイル:
+  - json_schema_codegen-0.1.0.gem (不要なビルド済みgemファイル)
+  - spec/fixtures/schema.json (main_schema.jsonと重複)
+- 整理後のディレクトリ構造はより整理され、各ファイルの役割が明確になりました
