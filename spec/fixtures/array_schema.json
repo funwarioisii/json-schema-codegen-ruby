@@ -1,0 +1,30 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "名前"
+    },
+    "tags": {
+      "type": "array",
+      "description": "タグリスト",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "scores": {
+      "type": "array",
+      "description": "スコアリスト",
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 100
+      }
+    }
+  },
+  "required": [
+    "name", 
+    "tags"
+  ]
+} 

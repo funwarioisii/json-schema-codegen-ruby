@@ -1,0 +1,40 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "メールアドレス"
+    },
+    "website": {
+      "type": "string", 
+      "format": "uri",
+      "description": "ウェブサイト"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "生年月日"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "作成日時"
+    },
+    "ipv4": {
+      "type": "string",
+      "format": "ipv4",
+      "description": "IPv4アドレス"
+    },
+    "ipv6": {
+      "type": "string",
+      "format": "ipv6",
+      "description": "IPv6アドレス"
+    }
+  },
+  "required": ["id", "email"]
+} 

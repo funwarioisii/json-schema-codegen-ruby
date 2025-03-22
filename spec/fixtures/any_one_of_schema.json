@@ -1,0 +1,55 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID"
+    },
+    "value": {
+      "description": "anyOfによる複数タイプ許容フィールド",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    },
+    "payment": {
+      "description": "oneOfによる排他的選択フィールド",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "card_number": {
+              "type": "string",
+              "pattern": "^\\d{16}$"
+            },
+            "expiry": {
+              "type": "string",
+              "pattern": "^\\d{2}/\\d{2}$"
+            }
+          },
+          "required": ["card_number", "expiry"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "bank_account": {
+              "type": "string"
+            },
+            "branch_code": {
+              "type": "string"
+            }
+          },
+          "required": ["bank_account", "branch_code"]
+        }
+      ]
+    }
+  },
+  "required": ["id"]
+} 

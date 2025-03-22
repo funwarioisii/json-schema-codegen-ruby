@@ -1,0 +1,23 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "名前"
+    },
+    "status": {
+      "type": "string",
+      "description": "ステータス",
+      "enum": ["active", "inactive", "pending"]
+    },
+    "priority": {
+      "type": "integer",
+      "description": "優先度",
+      "enum": [1, 2, 3, 5, 8]
+    }
+  },
+  "required": [
+    "name", 
+    "status"
+  ]
+} 
