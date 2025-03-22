@@ -1,0 +1,55 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json_schema_codegen"
+require "optparse"
+
+options = {
+  output: nil,
+  class_name: nil
+}
+
+parser = OptionParser.new do |opts|
+  opts.banner = "使用法: json_schema_codegen [オプション] <schema_file>"
+
+  opts.on("-o", "--output FILE", "出力ファイルパス") do |file|
+    options[:output] = file
+  end
+
+  opts.on("-c", "--class-name NAME", "生成するクラス名") do |name|
+    options[:class_name] = name
+  end
+
+  opts.on("-h", "--help", "ヘルプを表示") do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+if ARGV.empty?
+  puts "JSONスキーマファイルを指定してください。"
+  puts parser
+  exit 1
+end
+
+schema_file = ARGV[0]
+
+unless File.exist?(schema_file)
+  puts "指定されたファイルが見つかりません: #{schema_file}"
+  exit 1
+end
+
+# クラス名が指定されていない場合はファイル名から生成
+options[:class_name] ||= File.basename(schema_file, ".*").split("_").map(&:capitalize).join
+
+# Rubyコード生成
+ruby_code = JsonSchemaCodegen.generate_from_file(schema_file, options[:class_name])
+
+if options[:output]
+  File.write(options[:output], ruby_code)
+  puts "Rubyコードを生成しました: #{options[:output]}"
+else
+  puts ruby_code
+end 

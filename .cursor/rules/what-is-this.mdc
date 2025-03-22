@@ -1,0 +1,66 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+このプロジェクトでは JSON Schema から Rubyのコードが生成されることをゴールにします
+
+例えば次の通りです。
+
+
+JSON Schema:
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "ユーザー名"
+    },
+    "age": {
+      "type": "integer",
+      "description": "年齢",
+      "minimum": 0
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "メールアドレス"
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "アクティブかどうか"
+    }
+  },
+  "required": [
+    "name",
+    "age",
+    "email"
+  ]
+}
+```
+
+Ruby(Generated):
+
+```ruby
+User = Data.define(:name, :age, :email, :is_active) do
+  def initialize(name:, age:, email:, is_active: nil)
+    raise TypeError, "name must be a String" unless name.is_a?(String)
+    raise TypeError, "age must be an Integer" unless age.is_a?(Integer)
+    raise ArgumentError, "age must be greater than or equal to 0" if age < 0
+    raise TypeError, "email must be a String" unless email.is_a?(String)
+    raise TypeError, "is_active must be a Boolean or nil" unless is_active.nil? || [true, false].include?(is_active)
+    # email フォーマットのチェックは正規表現などを使う必要がありますが、ここでは省略します
+    super(name: name, age: age, email: email, is_active: is_active)
+  end
+end
+
+# 使用例
+user = User.new(name: "花子", age: 25, email: "hanako@example.com")
+# User.new(name: "次郎", age: "35", email: "jiro@example.com") # => TypeError: age must be an Integer
+# User.new(name: "三郎", age: -1, email: "saburo@example.com")  # => ArgumentError: age must be greater than or equal to 0
+```
+
+このライブラリはCLIとして利用可能で `jsc-codegen --file schema.json  --output ./lib/generated/schema.rb` のように利用できる
+ 

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "perplexity": {
+      "command": "/Users/funwarioisii/ghq/github.com/funwarioisii/perplexity-mcp-rb/perplexity_mcp.rb",
+      "env": {
+        "PERPLEXITY_API_KEY": "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"
+      },
+      "disabled": false
+    }
+  }
+}

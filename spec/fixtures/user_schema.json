@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "ユーザー名",
+      "minLength": 1
+    },
+    "age": {
+      "type": "integer",
+      "description": "年齢",
+      "minimum": 0
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "メールアドレス"
+    },
+    "is_active": {
+      "type": "boolean",
+      "description": "アクティブかどうか"
+    }
+  },
+  "required": [
+    "name",
+    "age",
+    "email"
+  ]
+} 
