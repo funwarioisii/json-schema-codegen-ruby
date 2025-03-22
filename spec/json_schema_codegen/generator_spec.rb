@@ -13,10 +13,10 @@ RSpec.describe JsonSchemaCodegen::Generator do
       code = subject.generate
       expect(code).to include("User = Data.define(:name, :age, :email, :is_active)")
       expect(code).to include("def initialize(name:, age:, email:, is_active: nil)")
-      expect(code).to include("raise TypeError, \"name must be a String\"")
-      expect(code).to include("raise TypeError, \"age must be an Integer\"")
-      expect(code).to include("raise TypeError, \"email must be a String\"")
-      expect(code).to include("raise ArgumentError, \"age must be greater than or equal to 0\"")
+      expect(code).to include("raise TypeError, \"nameは文字列である必要があります\"")
+      expect(code).to include("raise TypeError, \"ageは整数である必要があります\"")
+      expect(code).to include("raise TypeError, \"emailは文字列である必要があります\"")
+      expect(code).to include("raise ArgumentError, \"ageは0以上である必要があります\"")
     end
 
     it "generates a class that validates input types" do
@@ -32,15 +32,15 @@ RSpec.describe JsonSchemaCodegen::Generator do
       # 型エラーのケース
       expect {
         User.new(name: "次郎", age: "35", email: "jiro@example.com")
-      }.to raise_error(TypeError, "age must be an Integer")
+      }.to raise_error(TypeError, "ageは整数である必要があります")
 
       # 値の制約エラーのケース
       expect {
         User.new(name: "三郎", age: -1, email: "saburo@example.com")
-      }.to raise_error(ArgumentError, "age must be greater than or equal to 0")
+      }.to raise_error(ArgumentError, "ageは0以上である必要があります")
     end
   end
-  
+
   describe "nested objects" do
     let(:schema) { JSON.parse(File.read("spec/fixtures/nested_object_schema.json")) }
     let(:class_name) { "Person" }
@@ -48,9 +48,9 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "generates classes for nested objects" do
       code = subject.generate
       expect(code).to include("Person = Data.define(:name, :address)")
-      expect(code).to include("Address = Data.define(:street, :city, :zipcode)")
+      expect(code).to include("PersonAddress = Data.define(:street, :city, :zipcode)")
       expect(code).to include("def initialize(name:, address: nil)")
-      expect(code).to include("address = Address.new(**address)")
+      expect(code).to include("address = PersonAddress.new(**address)")
     end
 
     it "properly validates nested objects" do
@@ -76,7 +76,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           name: "鈴木花子",
           address: "東京都渋谷区" # 文字列ではなくオブジェクトが必要
         )
-      }.to raise_error(TypeError, "address must be a Hash")
+      }.to raise_error(TypeError, "addressはHashである必要があります")
 
       # ネストしたオブジェクトの必須フィールドエラー
       expect {
@@ -142,7 +142,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           tags: [], # 最低1つ必要
           scores: [85, 90]
         )
-      }.to raise_error(ArgumentError, "tags must have at least 1 items")
+      }.to raise_error(ArgumentError, "tagsは最低1個の要素が必要です")
     end
   end
 
@@ -179,7 +179,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           status: "unknown", # 許可されていない値
           priority: 2
         )
-      }.to raise_error(ArgumentError, "status must be one of: active, inactive, pending")
+      }.to raise_error(ArgumentError, "statusは次のいずれかである必要があります: active, inactive, pending")
 
       # enumに含まれない値のエラー (数値)
       expect {
@@ -188,7 +188,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           status: "active",
           priority: 4 # 許可されていない値
         )
-      }.to raise_error(ArgumentError, "priority must be one of: 1, 2, 3, 5, 8")
+      }.to raise_error(ArgumentError, "priorityは次のいずれかである必要があります: 1, 2, 3, 5, 8")
     end
   end
 
@@ -196,7 +196,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     let(:schema) { JSON.parse(File.read("spec/fixtures/any_one_of_schema.json")) }
     let(:class_name) { "Payment" }
 
-    it "generates classes with anyOf validation" do
+    it "generates anyOf and oneOf validation code" do
       code = subject.generate
       expect(code).to include("Payment = Data.define(:id, :value, :payment)")
       expect(code).to include("def initialize(id:, value: nil, payment: nil)")
@@ -205,12 +205,14 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
     it "properly validates anyOf values" do
       code = subject.generate
+      # テスト毎に一意のクラス名を使用して警告を回避
+      code.gsub!("Payment = ", "PaymentAnyOf = ")
       # コードを評価して実際のクラスを生成
       eval(code)
 
       # 正常なケース（文字列）
       expect {
-        Payment.new(
+        PaymentAnyOf.new(
           id: "ABC123",
           value: "文字列の値"
         )
@@ -218,7 +220,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
       # 正常なケース（数値）
       expect {
-        Payment.new(
+        PaymentAnyOf.new(
           id: "ABC123",
           value: 12345
         )
@@ -226,7 +228,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
       # 正常なケース（ブール値）
       expect {
-        Payment.new(
+        PaymentAnyOf.new(
           id: "ABC123",
           value: true
         )
@@ -234,20 +236,22 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
       # anyOfに含まれない型のエラー
       expect {
-        Payment.new(
+        PaymentAnyOf.new(
           id: "ABC123",
-          value: { key: "value" } # オブジェクトは許可されていない
+          value: {key: "value"} # オブジェクトは許可されていない
         )
-      }.to raise_error(ArgumentError, /value does not match any of the allowed schemas/)
+      }.to raise_error(ArgumentError, "valueは許可されているスキーマのいずれにも一致しません")
     end
 
     it "properly validates oneOf values" do
       code = subject.generate
+      # テスト毎に一意のクラス名を使用して警告を回避
+      code.gsub!("Payment = ", "PaymentOneOf = ")
       eval(code)
 
       # 正常なケース（カード決済）
       expect {
-        Payment.new(
+        PaymentOneOf.new(
           id: "ABC123",
           payment: {
             card_number: "1234567890123456",
@@ -258,7 +262,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
       # 正常なケース（銀行振込）
       expect {
-        Payment.new(
+        PaymentOneOf.new(
           id: "ABC123",
           payment: {
             bank_account: "123-456789",
@@ -269,24 +273,24 @@ RSpec.describe JsonSchemaCodegen::Generator do
 
       # oneOfに含まれない構造のエラー
       expect {
-        Payment.new(
+        PaymentOneOf.new(
           id: "ABC123",
           payment: {
             something_else: "invalid"
           }
         )
-      }.to raise_error(ArgumentError, /payment does not match exactly one of the allowed schemas/)
-      
+      }.to raise_error(ArgumentError, "paymentは許可されたスキーマのうちちょうど1つと一致する必要があります")
+
       # 必須フィールドが不足しているエラー
       expect {
-        Payment.new(
+        PaymentOneOf.new(
           id: "ABC123",
           payment: {
             card_number: "1234567890123456"
             # expiryが不足
           }
         )
-      }.to raise_error(ArgumentError, /payment does not match exactly one of the allowed schemas/)
+      }.to raise_error(ArgumentError, "paymentは許可されたスキーマのうちちょうど1つと一致する必要があります")
     end
   end
 
@@ -327,7 +331,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           id: "user123",
           email: "not-an-email"
         )
-      }.to raise_error(ArgumentError, /email is not a valid email format/)
+      }.to raise_error(ArgumentError, /emailは有効なメールアドレス形式ではありません/)
 
       # 不正なURI
       expect {
@@ -336,7 +340,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           email: "user@example.com",
           website: "not-a-url"
         )
-      }.to raise_error(ArgumentError, /website is not a valid uri format/)
+      }.to raise_error(ArgumentError, /websiteは有効なURI形式ではありません/)
 
       # 不正な日付
       expect {
@@ -345,7 +349,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
           email: "user@example.com",
           date_of_birth: "not-a-date"
         )
-      }.to raise_error(ArgumentError, /date_of_birth is not a valid date format/)
+      }.to raise_error(ArgumentError, /date_of_birthは有効な日付形式ではありません/)
     end
   end
-end 
+end
