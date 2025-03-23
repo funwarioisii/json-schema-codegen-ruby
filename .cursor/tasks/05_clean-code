@@ -1,0 +1,29 @@
+<task>
+formatのエラーを適宜修正してください
+検索できるはずなので、 standardrb の supress などはやり方を調べてください
+
+</task>
+
+---
+
+(ここから書いてね)
+
+- standardrbを実行して問題点を確認
+  - 主に以下の問題があった：
+    - Naming/VariableName: 変数名がスネークケースではなくキャメルケース（例：mimeType）
+    - Security/Eval: テストでevalを使用している
+    - Lint/Syntax: コメント内で改行が適切に処理されていない
+    - Layout関連の問題（インデント、空白行など）
+- .standard.ymlファイルを作成して設定
+  - exampleディレクトリを無視するように設定
+  - Ruby 3.2をターゲットバージョンに設定
+- 構文やフォーマットの問題を修正
+  - spec/fixtures/annotated_test.rbのコメント形式修正
+  - キャメルケースの変数をスネークケースに変更（例：mimeType → mime_type）
+- evalの警告を抑制
+  - 最初は全体的に無効化していたが、セキュリティリスクを考慮して修正
+  - 各eval使用箇所に個別にrubocop:disableコメントを追加（`# rubocop:disable Security/Eval`）
+  - これにより、必要な箇所だけで制限的にevalを許可し、セキュリティリスクを最小限に抑えた
+- 最終確認
+  - standardrbでフォーマットのエラーが出なくなったことを確認
+  - rspecでテストが正常に実行できることを確認

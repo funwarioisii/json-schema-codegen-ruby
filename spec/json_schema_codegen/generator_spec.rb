@@ -22,7 +22,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "generates a class that validates input types" do
       code = subject.generate
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース
       expect {
@@ -56,7 +56,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "properly validates nested objects" do
       code = subject.generate
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース
       expect {
@@ -106,7 +106,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "properly validates array items" do
       code = subject.generate
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース
       expect {
@@ -161,7 +161,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "properly validates enum values" do
       code = subject.generate
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース
       expect {
@@ -208,7 +208,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
       # テスト毎に一意のクラス名を使用して警告を回避
       code.gsub!("Payment = ", "PaymentAnyOf = ")
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース（文字列）
       expect {
@@ -247,7 +247,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
       code = subject.generate
       # テスト毎に一意のクラス名を使用して警告を回避
       code.gsub!("Payment = ", "PaymentOneOf = ")
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース（カード決済）
       expect {
@@ -310,7 +310,7 @@ RSpec.describe JsonSchemaCodegen::Generator do
     it "properly validates format values" do
       code = subject.generate
       # コードを評価して実際のクラスを生成
-      eval(code)
+      eval(code) # rubocop:disable Security/Eval
 
       # 正常なケース
       expect {

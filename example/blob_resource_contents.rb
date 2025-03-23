@@ -1,14 +1,14 @@
 # BlobResourceContents クラスの型定義:
 # - blob: string (byte) - A base64-encoded string representing the binary data of the item.
-# - mimeType: string - The MIME type of this resource, if known.
+# - mime_type: string - The MIME type of this resource, if known.
 # - uri: string (uri) - The URI of this resource.
 
-BlobResourceContents = Data.define(:blob, :mimeType, :uri) do
-  def initialize(blob:, uri:, mimeType: nil)
+BlobResourceContents = Data.define(:blob, :mime_type, :uri) do
+  def initialize(blob:, uri:, mime_type: nil)
     raise TypeError, "blobは文字列である必要があります" unless blob.is_a?(String)
     validate_format(blob, "byte", "blob")
-    unless mimeType.nil?
-      raise TypeError, "mimeTypeは文字列である必要があります" unless mimeType.is_a?(String)
+    unless mime_type.nil?
+      raise TypeError, "mime_typeは文字列である必要があります" unless mime_type.is_a?(String)
     end
     raise TypeError, "uriは文字列である必要があります" unless uri.is_a?(String)
     validate_format(uri, "uri", "uri")

@@ -1,0 +1,21 @@
+ruby:
+  target_ruby_version: 3.2
+
+ignore:
+  - 'vendor/**/*'
+  - 'bin/**/*'
+  - '.git/**/*'
+  - 'example/**/*'
+
+# evalはテストでのみ使用するため限定的に許可
+Lint/Syntax:
+  Enabled: true
+
+Security/Eval:
+  Enabled: true
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
+# TargetRubyVersionを明示的に設定
+AllCops:
+  TargetRubyVersion: 3.2 

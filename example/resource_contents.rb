@@ -1,18 +1,18 @@
 # BlobResourceContents クラスの型定義:
 # - blob: string (byte) - A base64-encoded string representing the binary data of the item.
-# - mimeType: string - The MIME type of this resource, if known.
+# - mime_type: string - The MIME type of this resource, if known.
 # - uri: string (uri) - The URI of this resource.
 
-BlobResourceContents = Data.define(:blob, :mimeType, :uri) do
-  def initialize(blob:, mimeType: nil, uri:)
+BlobResourceContents = Data.define(:blob, :mime_type, :uri) do
+  def initialize(blob:, mime_type: nil, uri:)
     raise TypeError, "blobは文字列である必要があります" unless blob.is_a?(String)
     validate_format(blob, "byte", "blob")
-    unless mimeType.nil?
-          raise TypeError, "mimeTypeは文字列である必要があります" unless mimeType.is_a?(String)
+    unless mime_type.nil?
+          raise TypeError, "mime_typeは文字列である必要があります" unless mime_type.is_a?(String)
     end
     raise TypeError, "uriは文字列である必要があります" unless uri.is_a?(String)
     validate_format(uri, "uri", "uri")
-    super(blob: blob, mimeType: mimeType, uri: uri)
+    super(blob: blob, mime_type: mime_type, uri: uri)
   end
   private
 
@@ -62,13 +62,11 @@ end
 
 # TextContentAnnotation クラスの型定義:
 # - audience: any[] (配列) - Describes who the intended customer of this object or data is.
-
-It can include multiple entries to indicate content useful for multiple audiences (e.g., `["user", "assistant"]`).
+#   It can include multiple entries to indicate content useful for multiple audiences (e.g., `["user", "assistant"]`).
 # - priority: number - Describes how important this data is for operating the server.
-
-A value of 1 means "most important," and indicates that the data is
-effectively required, while 0 means "least important," and indicates that
-the data is entirely optional.
+#   A value of 1 means "most important," and indicates that the data is
+#   effectively required, while 0 means "least important," and indicates that
+#   the data is entirely optional.
 
 TextContentAnnotation = Data.define(:audience, :priority) do
   def initialize(audience: nil, priority: nil)
